@@ -2,29 +2,33 @@ from threading import Timer,Thread,Event
 import time, socket
 
 class perpetualTimer():
-
+   cnt = 0
    def __init__(self,t,hFunction):
+      perpetualTimer.cnt += 1
+      self.cnt = perpetualTimer.cnt
+      self.id = str(time.time()).split('.')[1]
       self.t=t
       self.hFunction = hFunction
       self.thread = Timer(self.t,self.handle_function)
 
    def handle_function(self):
-      self.hFunction()
+      self.hFunction(self.cnt, self.id)
       self.thread = Timer(self.t,self.handle_function)
+      
       self.thread.start()
 
    def start(self):
-      print('start try')
+      print('[%s] start try'%(self.id))
       self.thread.start()
-      print('start success')
+      print('[%s] start success'%(self.id))
 
    def cancel(self):
-      print('cancel try')
+      print('[%s] cancel try'%(self.id))
       self.thread.cancel()
-      print('cancel success')
+      print('[%s] cancel success'%(self.id))
 
-def printer():
-    print ('ipsem lorem')
+def printer(cnt, i):
+    print ('[%d %7s] ipsem lorem'%(cnt, i))
 
 
 class Server():
@@ -67,5 +71,5 @@ class Server():
                t = self.threads.pop()
                t.cancel()
             else: print('Threads empty')
-            
+
 s = Server()
